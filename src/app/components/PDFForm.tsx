@@ -78,7 +78,6 @@ export const PDFForm = () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         setUploadProgress(100);
-        alert('PDF uploaded successfully!');
         
         const formData = new FormData();
         formData.append('file', file);
