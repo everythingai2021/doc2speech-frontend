@@ -12,8 +12,11 @@ export const PDFForm = () => {
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   
     const handleFileSelect = useCallback((selectedFile: File) => {
-      if (selectedFile.type !== 'application/pdf') {
-        alert('Please select a PDF file');
+      if (
+        selectedFile.type !== 'application/pdf' &&
+        selectedFile.type !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      ) {
+        alert('Please select a PDF or PowerPoint file');
         return;
       }
   
@@ -21,7 +24,6 @@ export const PDFForm = () => {
         alert('File size must be less than 10MB');
         return;
       }
-  
       setFile(selectedFile);
       setPdfUrl(URL.createObjectURL(selectedFile));
     }, []);
@@ -57,7 +59,7 @@ export const PDFForm = () => {
       e.preventDefault();
       
       if (!file) {
-        alert('Please select a PDF file');
+        alert('Please select a PDF or PowerPoint file');
         return;
       }
   
@@ -81,7 +83,7 @@ export const PDFForm = () => {
         
         const formData = new FormData();
         formData.append('file', file);
-        const res = await fetch("https://pdf2tts.onrender.com/convert", {
+        const res = await fetch("http://127.0.0.1:8000/convert  ", {
             method: "POST",
             body: formData,
         })
@@ -129,7 +131,7 @@ export const PDFForm = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf"
+                accept=".pdf, .pptx"
                 onChange={handleFileInputChange}
                 className="hidden"
               />
@@ -143,7 +145,7 @@ export const PDFForm = () => {
                   </div>
                   <div>
                     <p className="text-lg font-medium text-gray-900 mb-2">
-                      Drop your PDF here, or{' '}
+                      Drop your PDF or PowerPoint here, or{' '}
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
@@ -153,7 +155,7 @@ export const PDFForm = () => {
                       </button>
                     </p>
                     <p className="text-sm text-gray-500">
-                      Supports PDF files up to 10MB
+                      Supports PDF and PowerPoint files up to 10MB
                     </p>
                   </div>
                 </div>
@@ -207,7 +209,7 @@ export const PDFForm = () => {
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
-              {isUploading ? 'Uploading...' : 'Upload PDF'}
+              {isUploading ? 'Uploading...' : 'Upload PDF or PPTX'}
             </button>
           </form>
 
@@ -220,7 +222,7 @@ export const PDFForm = () => {
             </div>
           )}
 
-          {pdfUrl && (
+          {pdfUrl && file && file.type === "application/pdf" && (
             <div className="mt-6 flex flex-col items-center bg-yellow-50 rounded-lg p-4">
               <h3 className="font-medium text-yellow-900 mb-2 self-start">PDF Preview</h3>
               <iframe
@@ -228,6 +230,13 @@ export const PDFForm = () => {
                 title="PDF Preview"
                 style={{ width: '90vw', maxWidth: '1400px', height: '600px', border: '1px solid #e5e7eb', borderRadius: '0.5rem', background: 'white' }}
               />
+            </div>
+          )}
+
+          {pdfUrl && file && file.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation" && (
+            <div className="mt-6 flex flex-col items-center bg-yellow-50 rounded-lg p-4">
+              <h3 className="font-medium text-yellow-900 mb-2 self-start">PPTX Preview</h3>
+              <p className="text-gray-700">Preview not available for PowerPoint files.</p>
             </div>
           )}
 
