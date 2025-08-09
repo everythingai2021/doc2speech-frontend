@@ -83,7 +83,7 @@ export const PDFForm = () => {
         
         const formData = new FormData();
         formData.append('file', file);
-        const res = await fetch("https://pdf2tts.onrender.com/convert", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/convert", {
             method: "POST",
             body: formData,
         })
